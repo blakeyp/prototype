@@ -8,6 +8,7 @@ import java.net.UnknownHostException;
 import android.support.v7.app.AppCompatActivity;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -28,10 +29,15 @@ public class MainActivity extends AppCompatActivity {
         textField = (EditText) findViewById(R.id.editText1); // reference to the text field
         button = (Button) findViewById(R.id.button1); // reference to the send button
 
+        MakeConnection makeConnection = new MakeConnection();
+        makeConnection.execute();
+
+
         // Button press event listener
         button.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View v) {
+                Log.d("TEST", "Pressed button");
                 message = textField.getText().toString(); // get the text message on the text field
                 textField.setText(""); // Reset the text field to blank
                 SendMessage sendMessageTask = new SendMessage();
@@ -40,27 +46,57 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private class SendMessage extends AsyncTask<Void, Void, Void> {
+
+    private class MakeConnection extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected Void doInBackground(Void... params) {
             try {
 
-                client = new Socket("172.31.217.32", 8001);   // connect to the server
-
+                client = new Socket("172.31.54.204", 80);   // connect to the server
                 printwriter = new PrintWriter(client.getOutputStream(), true);
-                printwriter.write(message); // write the message to output stream
+                printwriter.write("connected"); // write the message to output stream
+                Log.d("TEST", "Connection made woooo");
 
-                printwriter.flush();
-                printwriter.close();
-                client.close(); // closing the connection
-
-            } catch (UnknownHostException e) {
-                e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }
             return null;
+        }
+
+    }
+
+
+    private class SendMessage extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            Log.d("TEST", "Sending message");
+            printwriter.write(message); // write the message to output stream
+            //printwriter.flush();
+            Log.d("TEST", "Sent message");
+
+            return null;
+        }
+
+    }
+
+
+    @Override
+    protected void onDestroy() {
+
+        super.onDestroy();
+
+        Log.d("TEST", "Closing stuff");
+
+        printwriter.close();
+
+        try {
+            client.close(); // closing the connection
+        }
+        catch (IOException e) {
+            e.printStackTrace();
         }
 
     }
