@@ -18,14 +18,14 @@ public class MainActivity extends AppCompatActivity {
     private PrintWriter printwriter;
     private EditText textField;
     private Button button;
-    private String message;
+    private String message = "jump";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {   // on opening the app
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        textField = (EditText) findViewById(R.id.editText1); // reference to the text field
+        //textField = (EditText) findViewById(R.id.editText1); // reference to the text field
         button = (Button) findViewById(R.id.button1); // reference to the send button
 
         // start a new thread to make a connection to the server socket
@@ -37,8 +37,8 @@ public class MainActivity extends AppCompatActivity {
 
             public void onClick(View v) {
             Log.d("DEBUG", "Pressed button");
-            message = textField.getText().toString();   // get the text message on the text field
-            textField.setText("");   // reset the text field to blank
+            //message = textField.getText().toString();   // get the text message on the text field
+            //textField.setText("");   // reset the text field to blank
             SendMessage sendMessageTask = new SendMessage();
             sendMessageTask.execute();
             }
@@ -64,11 +64,12 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                client = new Socket("172.31.223.242", 80);   // connect to the server
+                client = new Socket("172.31.16.81", 9000);   // connect to the server
+                Log.d("DEBUG", "Connection made");
                 printwriter = new PrintWriter(client.getOutputStream(), true);
                 printwriter.println("connected");   // write message to output stream with EOL char
                 printwriter.flush();
-                Log.d("DEBUG", "Connection made");
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
