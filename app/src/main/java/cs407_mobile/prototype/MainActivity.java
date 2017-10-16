@@ -16,8 +16,10 @@ public class MainActivity extends AppCompatActivity {
 
     private Socket client;
     private PrintWriter printwriter;
-    private EditText textField;
+    private EditText ipField;
     private Button button;
+    private Button buttonConnect;
+    private Button buttonDisconnect;
     private String message = "jump";
 
     @Override
@@ -25,22 +27,43 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //textField = (EditText) findViewById(R.id.editText1); // reference to the text field
+        ipField = (EditText) findViewById(R.id.editText); // reference to the text field
         button = (Button) findViewById(R.id.button1); // reference to the send button
-
-        // start a new thread to make a connection to the server socket
-        MakeConnection makeConnection = new MakeConnection();
-        makeConnection.execute();
+        buttonConnect = (Button) findViewById(R.id.buttonConnect); // reference to the connect button
+        buttonDisconnect = (Button) findViewById(R.id.buttonDisconnect); // reference to the connect button
 
         // button press event listener
         button.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View v) {
-            Log.d("DEBUG", "Pressed button");
+            Log.d("DEBUG", "Pressed Jump button");
             //message = textField.getText().toString();   // get the text message on the text field
             //textField.setText("");   // reset the text field to blank
             SendMessage sendMessageTask = new SendMessage();
             sendMessageTask.execute();
+            }
+        });
+
+        // button press event listener
+        buttonConnect.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View v) {
+                Log.d("DEBUG", "Pressed Connect Button");
+                Log.d("DEBUG", ipField.getText().toString());
+                //message = textField.getText().toString();   // get the text message on the text field
+                //textField.setText("");   // reset the text field to blank
+                // start a new thread to make a connection to the server socket
+                MakeConnection makeConnection = new MakeConnection(ipField.getText().toString());
+                makeConnection.execute();
+            }
+        });
+
+        // button press event listener
+        buttonDisconnect.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View v) {
+                Log.d("DEBUG", "Pressed Disconnect Button");
+                closeConnection();
             }
         });
     }
@@ -48,6 +71,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {   // on closing the app
         super.onDestroy();
+        closeConnection();
+    }
+
+    protected void closeConnection() {
         Log.d("DEBUG", "Closing stuff");
         printwriter.close();   // doesn't seem to work ?? just blocks - maybe already closed on server?
         try {
@@ -61,10 +88,16 @@ public class MainActivity extends AppCompatActivity {
 
     private class MakeConnection extends AsyncTask<Void, Void, Void> {
 
+        private String ipAddress;
+
+        public MakeConnection (String ipAddress) {
+            this.ipAddress = ipAddress;
+        }
+
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                client = new Socket("172.31.16.81", 9000);   // connect to the server
+                client = new Socket(ipAddress, 9000);   // connect to the server
                 Log.d("DEBUG", "Connection made");
                 printwriter = new PrintWriter(client.getOutputStream(), true);
                 printwriter.println("connected");   // write message to output stream with EOL char
