@@ -13,14 +13,12 @@ public class MainActivity extends AppCompatActivity {
     private EditText ipField;
     private Button button;
     private Button buttonConnect;
-    public ConnectionManager connectionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {   // on opening the app
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        connectionManager = new ConnectionManager();
 
         ipField = (EditText) findViewById(R.id.editText); // reference to the text field
         //button = (Button) findViewById(R.id.button1); // reference to the send button
@@ -43,27 +41,25 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Log.d("DEBUG", "Pressed Connect Button");
                 Log.d("DEBUG", ipField.getText().toString());
-                //openController();
+                openController(ipField.getText().toString());
                 //message = textField.getText().toString();   // get the text message on the text field
                 //textField.setText("");   // reset the text field to blank
                 // start a new thread to make a connection to the server socket
-                connectionManager.connectToIP(ipField.getText().toString());
             }
         });
 
     }
 
-    protected void openController() {
+    protected void openController(String address) {
         Log.d("DEBUG", "Starting Controller Activity");
         Intent intent = new Intent(this, Controller.class);
-        intent.putExtra();
+        intent.putExtra("ip",  address);
         startActivity(intent);
     }
 
     @Override
     protected void onDestroy() {   // on closing the app
         super.onDestroy();
-        connectionManager.closeConnection();
     }
 
 }

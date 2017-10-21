@@ -1,5 +1,7 @@
 package cs407_mobile.prototype;
 
+import android.app.IntentService;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -10,10 +12,18 @@ import java.net.Socket;
 /**
  * Created by u1421499 on 17/10/17.
  */
-class ConnectionManager {
+public class ConnectionService {
 
     MakeConnection connection;
     private PrintWriter printwriter;
+
+//
+//    @Override
+//    protected void onHandleIntent(Intent workIntent) {
+//        //get data from the Intent
+//        String ipAddress = workIntent.getDataString();
+//        //do some work
+//    }
 
     protected void connectToIP(String ipAddress) {
         connection = new MakeConnection(ipAddress);
@@ -74,7 +84,7 @@ class ConnectionManager {
         @Override
         protected Void doInBackground(Void... params) {
             Log.d("DEBUG", "Sending message");
-            printwriter.println("Jump");
+            printwriter.println(message);
             printwriter.flush();
             Log.d("DEBUG", "Sent message");
             return null;

@@ -24,6 +24,9 @@
         </activity>
         <activity android:name=".Controller"
             android:parentActivityName=".MainActivity"></activity>
+        <!--<service-->
+            <!--android:name=".ConnectionService"-->
+            <!--android:exported="false" />-->
     </application>
 
 </manifest>
