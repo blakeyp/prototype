@@ -1,7 +1,5 @@
 package cs407_mobile.prototype;
 
-import android.app.IntentService;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -9,24 +7,15 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-/**
- * Created by u1421499 on 17/10/17.
- */
+import static cs407_mobile.prototype.MainActivity.DEBUG_TAG;
+
 public class ConnectionService {
 
     MakeConnection connection;
     private PrintWriter printwriter;
 
-//
-//    @Override
-//    protected void onHandleIntent(Intent workIntent) {
-//        //get data from the Intent
-//        String ipAddress = workIntent.getDataString();
-//        //do some work
-//    }
-
-    protected void connectToIP(String ipAddress) {
-        connection = new MakeConnection(ipAddress);
+    protected void connectToIP(String ipAddr) {
+        connection = new MakeConnection(ipAddr);
         connection.execute();
     }
 
@@ -36,36 +25,36 @@ public class ConnectionService {
     }
 
     protected void closeConnection() {
-        Log.d("DEBUG", "Closing stuff");
-        printwriter.close();   // doesn't seem to work ?? just blocks - maybe already closed on server?
+        Log.d(DEBUG_TAG, "Closing stuff");
+        printwriter.close();
         try {
             connection.client.close();
         }
         catch (IOException e) {
             e.printStackTrace();
         }
-        Log.d("DEBUG", "Closed stuff");
+        Log.d(DEBUG_TAG, "Closed stuff");
     }
 
     private class MakeConnection extends AsyncTask<Void, Void, Void> {
 
-        private String ipAddress;
+        private String ipAddr;
         private Socket client;
 
-        public MakeConnection(String ipAddress) {
-            this.ipAddress = ipAddress;
+        public MakeConnection(String ipAddr) {
+            this.ipAddr = ipAddr;
         }
 
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                client = new Socket(ipAddress, 9000);   // connect to the server
-                Log.d("DEBUG", "Connection made");
+                client = new Socket(ipAddr, 9000);   // connect to the server
+                Log.d(DEBUG_TAG, "Connection made");
                 printwriter = new PrintWriter(client.getOutputStream(), true);
                 printwriter.println("connected");   // write message to output stream with EOL char
                 printwriter.flush();
-
             } catch (IOException e) {
+                Log.d(DEBUG_TAG, "Connection refused!!!");
                 e.printStackTrace();
             }
             return null;
@@ -83,10 +72,10 @@ public class ConnectionService {
 
         @Override
         protected Void doInBackground(Void... params) {
-            Log.d("DEBUG", "Sending message");
+            Log.d(DEBUG_TAG, "Sending message");
             printwriter.println(message);
             printwriter.flush();
-            Log.d("DEBUG", "Sent message");
+            Log.d(DEBUG_TAG, "Sent message");
             return null;
         }
 

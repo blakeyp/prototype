@@ -8,11 +8,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import static cs407_mobile.prototype.MainActivity.DEBUG_TAG;
+
 public class Controller extends AppCompatActivity {
 
-    private Button buttonDisconnect;
-    private Button buttonJump;
     private ConnectionService connectionService;
+    //private Button buttonJump;
+    //private Button buttonDisconnect;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,37 +22,34 @@ public class Controller extends AppCompatActivity {
         setContentView(R.layout.activity_controller);
 
         Intent intent = getIntent();
-        String address = intent.getStringExtra("ip");
+        String ipAddr = intent.getStringExtra("ip");   // get input IP address
 
         connectionService = new ConnectionService();
-        connectionService.connectToIP(address);
+        connectionService.connectToIP(ipAddr);
 
-        TextView textView = (TextView) findViewById(R.id.textView);
-        textView.setText("Connected to: " + address);
+        TextView ipPlaceholder = (TextView) findViewById(R.id.ipAddress);
+        ipPlaceholder.setText("Connected to: " + ipAddr);   // fill IP address placeholder with connected IP address
 
-
-
-        buttonDisconnect = (Button) findViewById(R.id.buttonDisconnect); // reference to the disconnect button
-
-        // button press event listener
-        buttonDisconnect.setOnClickListener(new View.OnClickListener() {
-
-            public void onClick(View v) {
-                Log.d("DEBUG", "Pressed Disconnect Button");
-            }
-        });
-
-        buttonJump = (Button) findViewById(R.id.button1); // reference to the disconnect button
+        Button buttonJump = (Button) findViewById(R.id.buttonJump);   // reference to the disconnect button
 
         // button press event listener
         buttonJump.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View v) {
-                Log.d("DEBUG", "Pressed Jump Button");
+                Log.d(DEBUG_TAG, "Pressed Jump button");
                 connectionService.sendMessage("jump");
             }
         });
 
+        Button buttonDisconnect = (Button) findViewById(R.id.buttonDisconnect);   // reference to the disconnect button
+
+        buttonDisconnect.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View v) {
+                Log.d("DEBUG", "Pressed Disconnect button");
+                connectionService.closeConnection();
+            }
+        });
 
     }
 
@@ -59,4 +58,5 @@ public class Controller extends AppCompatActivity {
         connectionService.closeConnection();
         super.onDestroy();
     }
+
 }

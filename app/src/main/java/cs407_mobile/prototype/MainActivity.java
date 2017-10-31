@@ -7,8 +7,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
+
+    public static String DEBUG_TAG = "MYDEBUG";
 
     private EditText ipField;
     private Button buttonConnect;
@@ -23,26 +26,25 @@ public class MainActivity extends AppCompatActivity {
 
         // on clicking connect button
         buttonConnect.setOnClickListener(new View.OnClickListener() {
-
             public void onClick(View v) {
-                Log.d("DEBUG", "Pressed Connect button");
-                Log.d("DEBUG", "IP address: " + ipField.getText().toString());
-                openController(ipField.getText().toString());
+                Log.d(DEBUG_TAG, "Pressed Connect button");
+                String ipAddr = ipField.getText().toString();
+                if (!ipAddr.matches("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$"))
+                    Toast.makeText(getApplicationContext(), "You did not enter a valid IP address!", Toast.LENGTH_LONG).show();
+                else {
+                    Log.d(DEBUG_TAG, "IP address: " + ipAddr);
+                    openController(ipAddr);
+                }
             }
         });
 
     }
 
     protected void openController(String address) {
-        Log.d("DEBUG", "Starting Controller Activity");
+        Log.d(DEBUG_TAG, "Starting Controller Activity");
         Intent intent = new Intent(this, Controller.class);
         intent.putExtra("ip",  address);
         startActivity(intent);
-    }
-
-    @Override
-    protected void onDestroy() {   // on closing the app
-        super.onDestroy();
     }
 
 }
