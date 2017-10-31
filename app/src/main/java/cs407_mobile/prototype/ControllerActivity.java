@@ -10,11 +10,11 @@ import android.widget.TextView;
 
 import static cs407_mobile.prototype.MainActivity.DEBUG_TAG;
 
-public class Controller extends AppCompatActivity {
+public class ControllerActivity extends AppCompatActivity {
 
     private ConnectionService connectionService;
-    //private Button buttonJump;
-    //private Button buttonDisconnect;
+    public Button buttonJump;
+    public Button buttonDisconnect;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,12 +25,11 @@ public class Controller extends AppCompatActivity {
         String ipAddr = intent.getStringExtra("ip");   // get input IP address
 
         connectionService = new ConnectionService();
-        connectionService.connectToIP(ipAddr);
+        connectionService.connectToIP(ipAddr, this);
 
-        TextView ipPlaceholder = (TextView) findViewById(R.id.ipAddress);
-        ipPlaceholder.setText("Connected to: " + ipAddr);   // fill IP address placeholder with connected IP address
+        setConnectStatus("Connecting to " + ipAddr + " ...");
 
-        Button buttonJump = (Button) findViewById(R.id.buttonJump);   // reference to the disconnect button
+        buttonJump = (Button) findViewById(R.id.buttonJump);   // reference to the disconnect button
 
         // button press event listener
         buttonJump.setOnClickListener(new View.OnClickListener() {
@@ -41,7 +40,10 @@ public class Controller extends AppCompatActivity {
             }
         });
 
-        Button buttonDisconnect = (Button) findViewById(R.id.buttonDisconnect);   // reference to the disconnect button
+        buttonJump.setClickable(false);
+        buttonJump.setAlpha(.5f);
+
+        buttonDisconnect = (Button) findViewById(R.id.buttonDisconnect);   // reference to the disconnect button
 
         buttonDisconnect.setOnClickListener(new View.OnClickListener() {
 
@@ -51,6 +53,13 @@ public class Controller extends AppCompatActivity {
             }
         });
 
+        buttonDisconnect.setClickable(false);
+        buttonDisconnect.setAlpha(.5f);
+    }
+
+    protected void setConnectStatus(String message) {
+        TextView ipPlaceholder = (TextView) findViewById(R.id.ipAddress);
+        ipPlaceholder.setText(message);   // fill IP address placeholder with current connection status
     }
 
     @Override

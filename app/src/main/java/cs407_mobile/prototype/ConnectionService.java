@@ -1,7 +1,10 @@
 package cs407_mobile.prototype;
 
+import android.app.Activity;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -14,7 +17,10 @@ public class ConnectionService {
     MakeConnection connection;
     private PrintWriter printwriter;
 
-    protected void connectToIP(String ipAddr) {
+    public ControllerActivity controller;
+
+    protected void connectToIP(String ipAddr, ControllerActivity ctrl) {
+        controller = ctrl;
         connection = new MakeConnection(ipAddr);
         connection.execute();
     }
@@ -55,9 +61,21 @@ public class ConnectionService {
                 printwriter.flush();
             } catch (IOException e) {
                 Log.d(DEBUG_TAG, "Connection refused!!!");
+                // reject and return to start screen
+                //controller.finish();
+                //Toast.makeText(getApplicationContext(), "You did not enter a valid IP address!", Toast.LENGTH_LONG).show();
                 e.printStackTrace();
             }
             return null;
+        }
+
+        protected void onPostExecute(Void result) {
+            Log.d(DEBUG_TAG, "Finished connecting");
+            controller.setConnectStatus("Connected to: " + ipAddr);
+            controller.buttonJump.setClickable(true);
+            controller.buttonJump.setAlpha(1);
+            controller.buttonDisconnect.setClickable(true);
+            controller.buttonDisconnect.setAlpha(1);
         }
 
     }

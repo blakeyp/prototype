@@ -2,10 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="cs407_mobile.prototype">
 
-    <!-- <uses-sdk -->
-    <!-- android:minSdkVersion="11" -->
-    <!-- android:targetSdkVersion="19" /> -->
-
     <uses-permission android:name="android.permission.INTERNET"></uses-permission>
 
     <application
@@ -22,11 +18,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Controller"
+        <activity android:name=".ControllerActivity"
             android:parentActivityName=".MainActivity"></activity>
-        <!--<service-->
-            <!--android:name=".ConnectionService"-->
-            <!--android:exported="false" />-->
     </application>
 
 </manifest>
