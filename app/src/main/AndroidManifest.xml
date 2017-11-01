@@ -18,8 +18,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ControllerActivity"
-            android:parentActivityName=".MainActivity"></activity>
+        <activity android:name=".ControllerActivity"></activity>
     </application>
 
 </manifest>

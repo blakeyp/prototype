@@ -1,23 +1,23 @@
 package cs407_mobile.prototype;
 
-import android.app.Activity;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 
 import static cs407_mobile.prototype.MainActivity.DEBUG_TAG;
 
 public class ConnectionService {
 
-    MakeConnection connection;
+    public ControllerActivity controller;
+    private MakeConnection connection;
+
     private PrintWriter printwriter;
 
-    public ControllerActivity controller;
 
     protected void connectToIP(String ipAddr, ControllerActivity ctrl) {
         controller = ctrl;
@@ -32,12 +32,13 @@ public class ConnectionService {
 
     protected void closeConnection() {
         Log.d(DEBUG_TAG, "Closing stuff");
-        printwriter.close();
-        try {
-            connection.client.close();
-        }
-        catch (IOException e) {
-            e.printStackTrace();
+        if (printwriter != null) {
+            printwriter.close();
+            try {
+                connection.client.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         Log.d(DEBUG_TAG, "Closed stuff");
     }
@@ -54,16 +55,16 @@ public class ConnectionService {
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                client = new Socket(ipAddr, 9000);   // connect to the server
+                Log.d(DEBUG_TAG, "Waiting for connection...");
+                client = new Socket();
+                client.connect(new InetSocketAddress(ipAddr, 9000), 10000);   // set timeout for connection blocking
                 Log.d(DEBUG_TAG, "Connection made");
                 printwriter = new PrintWriter(client.getOutputStream(), true);
                 printwriter.println("connected");   // write message to output stream with EOL char
                 printwriter.flush();
             } catch (IOException e) {
                 Log.d(DEBUG_TAG, "Connection refused!!!");
-                // reject and return to start screen
-                //controller.finish();
-                //Toast.makeText(getApplicationContext(), "You did not enter a valid IP address!", Toast.LENGTH_LONG).show();
+                cancel(true);   // cancel this AsyncTask
                 e.printStackTrace();
             }
             return null;
@@ -76,6 +77,11 @@ public class ConnectionService {
             controller.buttonJump.setAlpha(1);
             controller.buttonDisconnect.setClickable(true);
             controller.buttonDisconnect.setAlpha(1);
+        }
+
+        protected void onCancelled(Void result) {
+            Toast.makeText(controller, "Connection failed! Please try again.", Toast.LENGTH_LONG).show();
+            controller.finish();   // close controller activity
         }
 
     }
